@@ -17,4 +17,3 @@ wheels/
 
 # train
 notebooks/**
-!notebooks/*.ipynb
