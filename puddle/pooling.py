@@ -24,8 +24,11 @@ class AttentionPooling(nn.Module):
     通常のMEAN/CLSよりも文の意味に集中した表現を得やすい。
     """
 
-    def __init__(self, hidden_size, intermediate_size, dropout=None):
+    def __init__(self, hidden_size, intermediate_size=None, dropout=None):
         super().__init__()
+
+        if intermediate_size is None:
+            intermediate_size = hidden_size
 
         if dropout is not None and isinstance(dropout, float):
             self.atten = nn.Sequential(
@@ -90,8 +93,11 @@ class MultiHeadAttentionPooling(nn.Module):
     headsの出力を結合し、線形変換して文ベクトルに変換します。
     """
 
-    def __init__(self, hidden_size, intermediate_size, dropout=None, num_heads=4):
+    def __init__(self, hidden_size, intermediate_size=None, dropout=None, num_heads=4):
         super().__init__()
+
+        if intermediate_size is None:
+            intermediate_size = hidden_size
 
         self.heads = nn.ModuleList(
             [
@@ -247,7 +253,7 @@ class AdapterAttentionPooling(nn.Module):
     Adapter構造に似た設計で、追加学習がしやすく文表現の強化にも有効。
     """
 
-    def __init__(self, hidden_size, dropout=None, bottleneck=64):
+    def __init__(self, hidden_size, bottleneck=64, dropout=None):
         super().__init__()
 
         self.down_proj = nn.Linear(hidden_size, bottleneck)
@@ -267,8 +273,8 @@ class AdapterAttentionPooling(nn.Module):
         self.up_proj = nn.Linear(bottleneck, hidden_size)
 
         self.hidden_size = hidden_size
-        self.dropout = dropout
         self.bottleneck = bottleneck
+        self.dropout = dropout
 
     def forward(self, features):
         token_embeddings = features["token_embeddings"]
@@ -290,8 +296,8 @@ class AdapterAttentionPooling(nn.Module):
 
         config = {
             "hidden_size": self.hidden_size,
-            "dropout": self.dropout,
             "bottleneck": self.bottleneck,
+            "dropout": self.dropout,
         }
         with open(os.path.join(output_path, "config.json"), "w") as f:
             json.dump(config, f)

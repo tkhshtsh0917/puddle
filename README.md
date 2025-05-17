@@ -12,19 +12,16 @@ from datasets import Dataset
 
 from puddle import AttentionPooling
 
-data = {
+
+train_dataset = Dataset.from_dict({
     "anchor": ["anchor_text", ...],
     "positive": ["positive_text", ...],
     "negative": ["negative_text", ...]
-}
-train_dataset = Dataset.from_dict(data)
+})
 
 transformer_layer = models.Transformer("your-awesome-model")
 hidden_size: int = transformer_layer.get_word_embedding_dimension()
-pooling_layer = AttentionPooling(
-    hidden_size=hidden_size,
-    intermediate_size=hidden_size,
-)
+pooling_layer = AttentionPooling(hidden_size=hidden_size)
 
 model = SentenceTransformer(modules=[transformer_layer, pooling_layer])
 
